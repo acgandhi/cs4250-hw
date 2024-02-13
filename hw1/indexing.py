@@ -3,7 +3,7 @@
 # FILENAME: indexing.py
 # SPECIFICATION: description of the program
 # FOR: CS 4250- Assignment #1
-# TIME SPENT: how long it took you to complete the assignment
+# TIME SPENT: <1 hour (code), ~2-3 hours for assignment (partially)
 #-----------------------------------------------------------*/
 
 # IMPORTANT NOTE: DO NOT USE ANY ADVANCED PYTHON LIBRARY TO COMPLETE THIS CODE SUCH AS numpy OR pandas. You have to work here only with standard arrays
@@ -74,7 +74,7 @@ for word in terms:
         if termFreq[i][word] > 0:
             df[word] += 1
 
-idf = {word: log(3/df[word], 10) for word in terms}
+idf = {word: log(nDocs/df[word], 10) for word in terms}
 
 tf_idf: list[list] = [[0 for _ in range(nTerms)] for _ in range(nDocs)]
 
