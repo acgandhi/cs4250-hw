@@ -1,9 +1,10 @@
 #-------------------------------------------------------------------------
-# AUTHOR: your name
-# FILENAME: title of the source file
-# SPECIFICATION: description of the program
-# FOR: CS 4250- Assignment #1
-# TIME SPENT: how long it took you to complete the assignment
+# AUTHOR: Amar Gandhi
+# FILENAME: db_connection.py
+# SPECIFICATION: DB Wrapper for assignment 2 which implements inverted document index
+#                using PostgresSQL database.
+# FOR: CS 4250 - Assignment #2
+# TIME SPENT: 3 hours (code), 7 hours (total) -- little prior SQL experience
 #-----------------------------------------------------------*/
 
 #IMPORTANT NOTE: DO NOT USE ANY ADVANCED PYTHON LIBRARY TO COMPLETE THIS CODE SUCH AS numpy OR pandas. You have to work here only with
