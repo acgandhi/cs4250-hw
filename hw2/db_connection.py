@@ -17,7 +17,7 @@ from psycopg2.extras import execute_values
 
 # \s: space, \W non-alpha, _: _
 puncSpacesRe = re.compile('[\s\W_]+')
-puncRe = re.compile('[\W_]+')
+puncRe = re.compile('[^\w\s]+')
 
 
 def connectDataBase():
@@ -50,10 +50,11 @@ def createCategory(cur, catId, catName):
 def createDocument(cur, docId, docText, docTitle, docDate, docCat):
 
     # 1 Get the category id based on the informed category name
-    catId = cur.execute(
+    cur.execute(
         "SELECT id_cat FROM categories WHERE name = %s",
-        docCat
+        (docCat, )
     )
+    catId: int = cur.fetchone()[0]
 
     # 2 Insert the document in the database. For num_chars, discard the spaces and punctuation marks.
     numChars = len(puncSpacesRe.sub('', docText))
@@ -72,26 +73,27 @@ def createDocument(cur, docId, docText, docTitle, docDate, docCat):
 
     words = puncRe.sub('', docText).lower().split(' ')
     # find terms and counts
-    terms: dict[str, int] = {}
+    docTerms: dict[str, int] = {}
     for word in words:
-        terms[word] = terms.get(word, 0) + 1
+        docTerms[word] = docTerms.get(word, 0) + 1
 
     # Create new terms
-    # abuse sql pk constraints to prevent duplicate insertion
-    for term in terms:
-        try:
-            cur.execute(
-                "INSERT INTO terms (term, num_chars) VALUES (%s, %s)",
-                (term, len(term))
-            )
-        except psycopg2.ProgrammingError as e:
-            print(e)
+    cur.execute(
+        "SELECT term FROM terms"
+    )
+    terms = set([x[0] for x in cur.fetchall()])
+    newTerms = docTerms.keys() - terms
+    execute_values(
+        cur,
+        "INSERT INTO terms (term, num_chars) VALUES %s",
+        [(term, len(term)) for term in newTerms]
+    )
 
     # 4.3 Insert the term and its corresponding count into the database
     execute_values(
         cur,
-        "INSERT INTO document_terms (doc_number, term, count) VALUES (%s, %s, %s)",
-        [(docId, terms, numChars) for term, numChars in terms.items()]
+        "INSERT INTO document_terms (doc_number, term, count) VALUES %s",
+        [(docId, term, numChars) for term, numChars in docTerms.items()]
     )
 
 
@@ -135,9 +137,10 @@ def getIndex(cur):
     # {'baseball':'Exercise:1','summer':'Exercise:1,California:1,Arizona:1','months':'Exercise:1,Discovery:3'}
     # ...
     # term, DocumentTitle, count
-    documentTerms = cur.execute(
-        "SELECT (term, d.title, count) FROM document_terms INNER JOIN documents as d on d.doc_number = document_terms.doc_number"
+    cur.execute(
+        "SELECT term, d.title, count FROM document_terms INNER JOIN documents as d on d.doc_number = document_terms.doc_number"
     )
+    documentTerms: list[tuple[str, str, int]] = cur.fetchall()
     
     index = {}
     # similar to reduce in map-reduce?
