@@ -7,7 +7,7 @@
 #-----------------------------------------------------------*/
 
 #importing some Python libraries
-from db_connection_solution import *
+from db_connection import *
 
 if __name__ == '__main__':
 
