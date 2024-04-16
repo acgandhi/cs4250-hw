@@ -74,10 +74,31 @@ def updateDocument(col, docId, docText, docTitle, docDate, docCat):
     createDocument(col, docId, docText, docTitle, docDate, docCat)
 
 
-def getIndex(col):
-    pass
+def getIndex(col: Collection):
 
     # Query the database to return the documents where each term occurs with their corresponding count. Output example:
     # {'baseball':'Exercise:1','summer':'Exercise:1,California:1,Arizona:1','months':'Exercise:1,Discovery:3'}
     # ...
+    docTerms = list(col.aggregate([
+        { '$unwind': '$terms' },
+        {
+            '$group': {
+                '_id': '$terms.term',
+                'documents': {
+                    '$push': {
+                        'title': '$title',
+                        'count': '$terms.count'
+                    }
+                }
+            }
+        }
+        ]
+    ))
+    # format for output
+    index = {}
+    for term in docTerms:
+        # term: 'docTitle:docCount,...'
+        index[term['_id']] = ','.join([f"{doc['title']}:{doc['count']}" for doc in term['documents']])
+
+    return index
 
