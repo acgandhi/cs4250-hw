@@ -1,9 +1,9 @@
 #-------------------------------------------------------------------------
 # AUTHOR: Amar Gandhi
 # FILENAME: index_mongo.py
-# SPECIFICATION: description of the program
+# SPECIFICATION: Driver code for mongo based search index.
 # FOR: CS 4250- Assignment #3
-# TIME SPENT: how long it took you to complete the assignment
+# TIME SPENT: <1 hour (python code), 3 hours (total)
 #-----------------------------------------------------------*/
 
 from pymongo import MongoClient  # import mongo client to connect
