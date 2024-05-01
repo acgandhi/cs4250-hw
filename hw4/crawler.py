@@ -1,3 +1,13 @@
+#------------------------------------------------------------------------------
+# AUTHOR: Amar Gandhi
+# FILENAME: crawler.py
+# SPECIFICATION: Crawl the page www.cpp.edu/sci/computer-science, until the
+#   permanent faculty page is reached. Parse each page to find new URLs to
+#   crawl, and store each page in mongodb.
+# FOR: CS 4250 - Assignment #4
+# TIME SPENT: ~2.5 hours
+#------------------------------------------------------------------------------
+
 import re
 from queue import Queue
 from urllib.error import HTTPError, URLError
